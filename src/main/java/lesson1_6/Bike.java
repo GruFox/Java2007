@@ -6,4 +6,17 @@ public class Bike extends Transport{
     public Bike(int wheelsNumber) {
         this.wheelsNumber = wheelsNumber;
     }
+
+    @Override
+    public void wroomWroom() {
+        System.out.println("Bzzzz");
+    }
+
+    @Override
+    public void printInventionDate() {
+        System.out.println("1950");
+    }
+    public final boolean requireHelmet() {
+        return true;
+    }
 }
