@@ -14,7 +14,9 @@ public class Cat {
     }
 
     public void takeEat(Plate plate) {
-        if(plate.refill(catEat) < 0){   // Почему-то метод 2 раза из тарелки списывает еду для кота, дебаг мне не помог...
+        if (this.catEat > plate.getFullnessPlate()) {
+            System.out.println("food is scarce");
+        } else if(plate.refill(catEat) < 0){
             fullness = false;
         } else {
             fullness = true;

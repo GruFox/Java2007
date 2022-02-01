@@ -6,7 +6,7 @@ public class AppCatPlate {
 
         Cat cat = new Cat(5);
         Cat cat2 = new Cat(10);
-        Cat cat3 = new Cat(50);         // Не смог разобраться, почему фолс не выводит.
+        Cat cat3 = new Cat(50);
         Plate plate = new Plate(30);
 
         plate.info();
@@ -18,13 +18,14 @@ public class AppCatPlate {
         plate.info();
         plate.isFull(cat2);
         cat2.takeEat(plate);
-        cat.info();
+        cat2.info();
         System.out.println();
 
         plate.info();
         plate.isFull(cat3);
         cat3.takeEat(plate);
-        cat.info();
+        cat3.info();
+        plate.info();
 
     }
 }

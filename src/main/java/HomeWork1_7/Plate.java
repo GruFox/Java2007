@@ -8,6 +8,10 @@ public class Plate {
         this.fullnessPlate = fullnessPlate;
     }
 
+    public int getFullnessPlate() {
+        return fullnessPlate;
+    }
+
     public int refill(int amount) {
         return this.fullnessPlate -= amount;
 
