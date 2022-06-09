@@ -1,48 +1,88 @@
 package HomeWork2_6;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Scanner;
 
 public class Server {
-    public static void start() {
 
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try (ServerSocket serverSocket = new ServerSocket(8188)) {
-                    System.out.println("Сервер запущен, ожидаем подключения");
-                    Socket socket = serverSocket.accept();
-                    System.out.println("Клиент подключился");
+    Socket socket;
+    DataInputStream in;
+    DataOutputStream out;
 
-                    DataInputStream in = new DataInputStream(socket.getInputStream());
-                    DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+    public void start() {
 
-                    Scanner scanner = new Scanner(System.in);
-                    while (true) {
+        // Подключение
+        try {
+            ServerSocket serverSocket = new ServerSocket(8166);
+            System.out.println("Сервер запущен, ожидаем подключения...");
+            socket = serverSocket.accept();
+            System.out.println("Клиент подключился");
+            InputStream inputStream = socket.getInputStream();
+            in = new DataInputStream(inputStream);
+            OutputStream outputStream = socket.getOutputStream();
+            out = new DataOutputStream(outputStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-                        String message = in.readUTF();
-                        System.out.println("Сообщение от клиента: " + message);
-                        if ("/end".equalsIgnoreCase(message)) {
-                            out.writeUTF("/end");
-                            break;
-                        }
-
-                        String msg = scanner.nextLine();
-                        out.writeUTF(msg);
-                        System.out.println("Сообщение от сервера: " + msg);
-                        if ("/end".equalsIgnoreCase(msg)) {
-                            break;
-                        }
+        // Отдельный поток на прием сообщений
+        new Thread(() -> {
+            try {
+                String message;
+                while (true) {
+                    message = in.readUTF();
+                    if (message.equals("/end")) {
+                        System.out.println("Клиент отключился");
+                        break; // прерывает цикл, и как следствие, поток
                     }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    throw new RuntimeException(e);
+                    System.out.println("Сообщение от клиента: " + message);
                 }
+            } catch (Exception e){
+                e.printStackTrace();
             }
-        });
+        }).start();
+
+       // Поток на ввод сообщений
+       try {
+           Scanner s = new Scanner(System.in);
+           String messageOut;
+           while (true) {
+               messageOut = s.nextLine();
+               out.writeUTF(messageOut);
+               if (messageOut.equals("/end")) {
+                   break;
+               }
+               System.out.println("Сообщение от сервера: " + messageOut);
+           }
+       } catch (Exception e){
+           e.printStackTrace();
+       } finally {
+           closing();
+       }
+    }
+    public void closing(){
+        if(socket != null) {
+            try {
+                socket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        if(in != null) {
+            try {
+                in.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        if(out != null) {
+            try {
+                out.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
